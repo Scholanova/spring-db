@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/>
+    <title>Liste des messages</title>
+</head>
+<body>
+
+<h1>Liste des Messages</h1>
+
+<table>
+    <tr>
+        <th>MESSAGE</th>
+    </tr>
+    <tr th:each="message : ${messages}">
+        <td th:text="${message.content}"></td>
+    </tr>
+</table>
+
+
+<a href="/new">Submit another message</a>
+</body>
+</html>
