@@ -18,6 +18,10 @@
     </tr>
 </table>
 
+<div th:if="${newMessage != null}">
+    <h2>Nouveau Message</h2>
+    <p th:text="${newMessage.content}" />
+</div>
 
 <a href="/new">Submit another message</a>
 </body>

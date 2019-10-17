@@ -24,7 +24,6 @@ public class MessageController {
         List<Message> messages = messageService.listAll();
 
         model.addAttribute("messages", messages);
-
         return "message-list";
     }
 
@@ -36,10 +35,10 @@ public class MessageController {
 
     @PostMapping("/")
     public String createMessage(@ModelAttribute Message message, Model model) {
-
-        messageService.create(message);
-
+        Message newMessage = messageService.create(message);
         List<Message> messages = messageService.listAll();
+
+        model.addAttribute("newMessage", newMessage);
         model.addAttribute("messages", messages);
         return "message-list";
     }
