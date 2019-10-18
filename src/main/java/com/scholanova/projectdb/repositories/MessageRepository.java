@@ -1,6 +1,7 @@
 package com.scholanova.projectdb.repositories;
 
 import com.scholanova.projectdb.models.Message;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -16,11 +17,8 @@ import java.util.Map;
 @Repository
 public class MessageRepository {
 
-    private final NamedParameterJdbcTemplate jdbcTemplate;
-
-    public MessageRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     public List<Message> listAll() {
         String query = "SELECT ID as id, " +
@@ -54,8 +52,8 @@ public class MessageRepository {
     public Integer create(Message message) {
         KeyHolder holder = new GeneratedKeyHolder();
 
-        String query = "INSERT INTO MESSAGES" +
-                "(CONTENT) VALUES" +
+        String query = "INSERT INTO MESSAGES " +
+                "(CONTENT) VALUES " +
                 "(:content)";
 
         SqlParameterSource parameters = new MapSqlParameterSource()
