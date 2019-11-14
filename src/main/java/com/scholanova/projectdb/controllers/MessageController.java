@@ -36,16 +36,19 @@ public class MessageController {
 
     @PostMapping("/")
     public String createMessage(@ModelAttribute Message message, Model model) {
-        Message newMessage = null;
         try {
-            newMessage = messageService.create(message);
-        } catch (MessageCannontBeEmptyExecption messageCannontBeEmptyExecption) {
-            messageCannontBeEmptyExecption.printStackTrace();
-        }
-        List<Message> messages = messageService.listAll();
+            Message newMessage = messageService.create(message);
 
-        model.addAttribute("newMessage", newMessage);
-        model.addAttribute("messages", messages);
-        return "message-list";
+            List<Message> messages = messageService.listAll();
+
+            model.addAttribute("newMessage", newMessage);
+            model.addAttribute("messages", messages);
+            return "message-list";
+
+        } catch (MessageCannontBeEmptyExecption messageCannontBeEmptyExecption) {
+            model.addAttribute("message", message);
+            model.addAttribute("errorMessage", "Message cannot be empty !");
+            return "message-new";
+        }
     }
 }

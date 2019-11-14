@@ -9,6 +9,11 @@
 
 <h1>Form</h1>
 
+<div th:if="${errorMessage != null}">
+    <h2>Error when submitting form</h2>
+    <p th:text="${errorMessage}" />
+</div>
+
 <form action="#" th:action="@{/}" th:object="${message}" method="post">
     <p>Message: <input type="text" th:field="*{content}"/></p>
     <p>
