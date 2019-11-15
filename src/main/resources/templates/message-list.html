@@ -12,7 +12,7 @@
 
 <table>
     <tr>
-        <th>MESSAGE</th>
+        <th>MESSAGE LIST</th>
     </tr>
     <tr th:each="message : ${messages}">
         <td th:text="${message.content}"></td>
@@ -20,7 +20,7 @@
 </table>
 
 <div th:if="${newMessage != null}">
-    <h2>Nouveau Message</h2>
+    <h2>There is a new Message :</h2>
     <p th:text="${newMessage.content}" />
 </div>
 
