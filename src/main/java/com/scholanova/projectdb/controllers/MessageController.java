@@ -1,6 +1,7 @@
 package com.scholanova.projectdb.controllers;
 
 import com.scholanova.projectdb.exceptions.MessageCannotBeEmptyException;
+import com.scholanova.projectdb.exceptions.MessageCannotBeOver50CharException;
 import com.scholanova.projectdb.models.Message;
 import com.scholanova.projectdb.services.MessageService;
 import org.springframework.stereotype.Controller;
@@ -49,6 +50,11 @@ public class MessageController {
             model.addAttribute("message", message);
             model.addAttribute("errorMessage", "Message cannot be empty !");
             return "message-new";
+        } catch (MessageCannotBeOver50CharException e) {
+            model.addAttribute("message", message);
+            model.addAttribute("errorMessage", "Message cannot be over 50 char !");
+            return "message-new";
+
         }
     }
 }

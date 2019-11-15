@@ -2,6 +2,7 @@ package com.scholanova.projectdb.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scholanova.projectdb.exceptions.MessageCannotBeEmptyException;
+import com.scholanova.projectdb.exceptions.MessageCannotBeOver50CharException;
 import com.scholanova.projectdb.models.Message;
 import com.scholanova.projectdb.services.MessageService;
 import org.junit.jupiter.api.Nested;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Arrays;
 
@@ -132,6 +134,42 @@ class MessageControllerTest {
 
             verify(messageService, atLeastOnce()).create(argument.capture());
             assertThat(argument.getValue()).extracting(Message::getContent).isEqualTo(newMessageEmptyContent);
+        }
+
+        @Test
+        void whenTooBigContentMessage_thenReturnsToFormScreenWithTooLongContentErrorMessage() throws Exception {
+            // Given
+            ArgumentCaptor<Message> argument = ArgumentCaptor.forClass(Message.class);
+
+            String someTooLongContent = "some too long content";
+            String someTitle = "some title";
+            String errorMessage = "Message cannot be over 50 char !";
+
+            Message messageToCreate = new Message(null, someTooLongContent, someTitle);
+
+            when(messageService.create(any(Message.class))).thenThrow(new MessageCannotBeOver50CharException());
+
+            // Then
+            MockHttpServletRequestBuilder request = post("/")
+                    .param("content", someTooLongContent)
+                    .param("title", someTitle);
+
+            mockMvc.perform(request)
+                    .andExpect(status().isOk())
+                    .andExpect(model().attribute(
+                            "message",
+                            allOf(
+                                    instanceOf(Message.class),
+                                    hasProperty("content", is(someTooLongContent)),
+                                    hasProperty("title", is(someTitle))
+                            )
+                    ))
+                    .andExpect(model().attribute("errorMessage", errorMessage))
+                    .andExpect(view().name("message-new"));
+
+            verify(messageService, atLeastOnce()).create(argument.capture());
+            assertThat(argument.getValue()).extracting(Message::getContent).isEqualTo(someTooLongContent);
+            assertThat(argument.getValue()).extracting(Message::getTitle).isEqualTo(someTitle);
         }
     }
 }

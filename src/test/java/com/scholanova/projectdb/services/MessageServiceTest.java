@@ -1,6 +1,7 @@
 package com.scholanova.projectdb.services;
 
 import com.scholanova.projectdb.exceptions.MessageCannotBeEmptyException;
+import com.scholanova.projectdb.exceptions.MessageCannotBeOver50CharException;
 import com.scholanova.projectdb.models.Message;
 import com.scholanova.projectdb.repositories.MessageRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,7 +59,24 @@ class MessageServiceTest {
     }
 
     @Test
-    void givenNotEmptyContentMessage_whenCreated_savesMessageInRepository() throws MessageCannotBeEmptyException {
+    void givenTooLongContentMessage_whenCreated_failsWithTooLongContentError() {
+        // GIVEN
+        char[] charArrayOf50Chars = new char[50];
+        Arrays.fill(charArrayOf50Chars, 'a');
+        String tooLongContent = String.valueOf(charArrayOf50Chars);
+        Message tooLongContentMessage = new Message(null, tooLongContent, "title");
+
+        // WHEN
+        assertThrows(MessageCannotBeOver50CharException.class, () -> {
+            messageService.create(tooLongContentMessage);
+        });
+
+        // THEN
+        verify(messageRepository, never()).create(tooLongContentMessage);
+    }
+
+    @Test
+    void givenNotEmptyContentMessage_whenCreated_savesMessageInRepository() throws Exception {
         // GIVEN
         Message notEmptyMessage = new Message(null, " a content ", "");
         Message savedMessage = new Message(1, " a content ", "");
