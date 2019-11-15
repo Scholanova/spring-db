@@ -12,15 +12,18 @@
 
 <table>
     <tr>
-        <th>MESSAGE</th>
+        <th>Title</th>
+        <th>Content</th>
     </tr>
     <tr th:each="message : ${messages}">
-        <td th:text="${message.content}"></td>
+        <td><span th:text="${message.title}" /></td>
+        <td><span th:text="${message.content}" /></td>
     </tr>
 </table>
 
 <div th:if="${newMessage != null}">
     <h2>Nouveau Message</h2>
+    <p th:text="${newMessage.title}" />
     <p th:text="${newMessage.content}" />
 </div>
 

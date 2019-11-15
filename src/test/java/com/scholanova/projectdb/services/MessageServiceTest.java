@@ -1,6 +1,6 @@
 package com.scholanova.projectdb.services;
 
-import com.scholanova.projectdb.exceptions.MessageCannontBeEmptyExecption;
+import com.scholanova.projectdb.exceptions.MessageCannotBeEmptyException;
 import com.scholanova.projectdb.models.Message;
 import com.scholanova.projectdb.repositories.MessageRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,10 +29,10 @@ class MessageServiceTest {
     @Test
     void givenNoContentMessage_whenCreated_failsWithNoEmptyMessageError() {
         // GIVEN
-        Message emptyMessage = new Message(null, null);
+        Message emptyMessage = new Message(null, null, null);
 
         // WHEN
-        assertThrows(MessageCannontBeEmptyExecption.class, () -> {
+        assertThrows(MessageCannotBeEmptyException.class, () -> {
             messageService.create(emptyMessage);
         });
 
@@ -43,10 +43,10 @@ class MessageServiceTest {
     @Test
     void givenEmptyContentMessage_whenCreated_failsWithNoEmptyMessageError() {
         // GIVEN
-        Message emptyMessage = new Message(null, "  ");
+        Message emptyMessage = new Message(null, "  ", "");
 
         // WHEN
-        assertThrows(MessageCannontBeEmptyExecption.class, () -> {
+        assertThrows(MessageCannotBeEmptyException.class, () -> {
             messageService.create(emptyMessage);
         });
 
@@ -55,10 +55,10 @@ class MessageServiceTest {
     }
 
     @Test
-    void givenNotEmptyContentMessage_whenCreated_savesMessageInRepository() throws MessageCannontBeEmptyExecption {
+    void givenNotEmptyContentMessage_whenCreated_savesMessageInRepository() throws MessageCannotBeEmptyException {
         // GIVEN
-        Message notEmptyMessage = new Message(null, " a content ");
-        Message savedMessage = new Message(1, " a content ");
+        Message notEmptyMessage = new Message(null, " a content ", "");
+        Message savedMessage = new Message(1, " a content ", "");
         Integer messageId = 1;
 
         when(messageRepository.create(notEmptyMessage)).thenReturn(messageId);

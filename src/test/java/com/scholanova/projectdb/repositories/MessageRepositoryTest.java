@@ -46,8 +46,8 @@ class MessageRepositoryTest {
         @Test
         void whenTwoMessages_thenReturnsListWithTwoMessages() {
             // Given
-            insertMessage("MESSAGE 1");
-            insertMessage("MESSAGE 2");
+            insertMessage("MESSAGE 1", "TITLE 1");
+            insertMessage("MESSAGE 2", "TITLE 2");
 
             // When
             List<Message> messages = messageRepository.listAll();
@@ -63,16 +63,30 @@ class MessageRepositoryTest {
     void getById() {
     }
 
-    @Test
-    void create() {
+    @Nested
+    class Test_create {
+
+        @Test
+        void whenCreateMessage_thenMessageIsInDatabase() {
+            // Given
+            Message messageToCreate = new Message(null, "Content 1", "Title 1");
+
+            // When
+            Integer id = messageRepository.create(messageToCreate);
+
+            // Then
+            Message createdMessage = messageRepository.getById(id);
+
+            assertThat(createdMessage).extracting(Message::getContent).isEqualTo("Content 1");
+            assertThat(createdMessage).extracting(Message::getTitle).isEqualTo("Title 1");
+            assertThat(createdMessage).extracting(Message::getId).isEqualTo(id);
+        }
     }
 
-    private void insertMessage(String text) {
-        jdbcTemplate.execute(
-                String.format("INSERT INTO MESSAGES " +
-                                "(CONTENT) " +
-                                "VALUES ('%s')",
-                        text)
-        );
+    private void insertMessage(String content, String title) {
+        String query = "INSERT INTO MESSAGES " +
+                "(CONTENT, TITLE) " +
+                "VALUES ('%s', '%s')";
+        jdbcTemplate.execute(String.format(query, content, title));
     }
 }

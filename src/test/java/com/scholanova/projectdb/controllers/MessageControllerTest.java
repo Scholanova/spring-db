@@ -1,6 +1,7 @@
 package com.scholanova.projectdb.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scholanova.projectdb.exceptions.MessageCannotBeEmptyException;
 import com.scholanova.projectdb.models.Message;
 import com.scholanova.projectdb.services.MessageService;
 import org.junit.jupiter.api.Nested;
@@ -56,8 +57,8 @@ class MessageControllerTest {
         @Test
         void whenTwoMessages_thenReturnsListWithTwoMessages() throws Exception {
             // Given
-            Message message1 = new Message(1, "Message 1");
-            Message message2 = new Message(2, "Message 2");
+            Message message1 = new Message(1, "Message 1", "");
+            Message message2 = new Message(2, "Message 2", "");
             when(messageService.listAll()).thenReturn(Arrays.asList(message1, message2));
 
             // Then
@@ -87,9 +88,9 @@ class MessageControllerTest {
             ArgumentCaptor<Message> argument = ArgumentCaptor.forClass(Message.class);
 
             String newMessageContent = "Message 2";
-            Message existingMessage = new Message(1, "Message 1");
-            Message messageToCreate = new Message(null, newMessageContent);
-            Message messageCreated = new Message(2, newMessageContent);
+            Message existingMessage = new Message(1, "Message 1", "");
+            Message messageToCreate = new Message(null, newMessageContent, "");
+            Message messageCreated = new Message(2, newMessageContent, "");
             when(messageService.create(any(Message.class))).thenReturn(messageCreated);
             when(messageService.listAll()).thenReturn(Arrays.asList(existingMessage, messageCreated));
 
@@ -105,6 +106,32 @@ class MessageControllerTest {
 
             verify(messageService, atLeastOnce()).create(argument.capture());
             assertThat(argument.getValue()).extracting(Message::getContent).isEqualTo(newMessageContent);
+        }
+
+        @Test
+        void whenEmptyContentMessage_thenReturnsToFormScreenWithEmptyContentErrorMessage() throws Exception {
+            // Given
+            ArgumentCaptor<Message> argument = ArgumentCaptor.forClass(Message.class);
+
+            String newMessageEmptyContent = "  ";
+            String errorMessage = "Message cannot be empty !";
+
+            Message messageToCreate = new Message(null, newMessageEmptyContent, "");
+
+            when(messageService.create(any(Message.class))).thenThrow(new MessageCannotBeEmptyException());
+
+            // Then
+            mockMvc.perform(post("/").param("content", newMessageEmptyContent))
+                    .andExpect(status().isOk())
+                    .andExpect(model().attribute(
+                            "message",
+                            hasProperty("content", is(newMessageEmptyContent))
+                    ))
+                    .andExpect(model().attribute("errorMessage", errorMessage))
+                    .andExpect(view().name("message-new"));
+
+            verify(messageService, atLeastOnce()).create(argument.capture());
+            assertThat(argument.getValue()).extracting(Message::getContent).isEqualTo(newMessageEmptyContent);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.scholanova.projectdb.controllers;
 
-import com.scholanova.projectdb.exceptions.MessageCannontBeEmptyExecption;
+import com.scholanova.projectdb.exceptions.MessageCannotBeEmptyException;
 import com.scholanova.projectdb.models.Message;
 import com.scholanova.projectdb.services.MessageService;
 import org.springframework.stereotype.Controller;
@@ -30,7 +30,7 @@ public class MessageController {
 
     @GetMapping("/new")
     public String newMessage(Model model) {
-        model.addAttribute("message", new Message(null, ""));
+        model.addAttribute("message", new Message(null, "", ""));
         return "message-new";
     }
 
@@ -45,7 +45,7 @@ public class MessageController {
             model.addAttribute("messages", messages);
             return "message-list";
 
-        } catch (MessageCannontBeEmptyExecption messageCannontBeEmptyExecption) {
+        } catch (MessageCannotBeEmptyException messageCannotBeEmptyException) {
             model.addAttribute("message", message);
             model.addAttribute("errorMessage", "Message cannot be empty !");
             return "message-new";

@@ -1,6 +1,6 @@
 package com.scholanova.projectdb.services;
 
-import com.scholanova.projectdb.exceptions.MessageCannontBeEmptyExecption;
+import com.scholanova.projectdb.exceptions.MessageCannotBeEmptyException;
 import com.scholanova.projectdb.models.Message;
 import com.scholanova.projectdb.repositories.MessageRepository;
 import org.springframework.stereotype.Service;
@@ -16,10 +16,10 @@ public class MessageService {
         this.messageRepository = messageRepository;
     }
 
-    public Message create(Message message) throws MessageCannontBeEmptyExecption {
+    public Message create(Message message) throws MessageCannotBeEmptyException {
 
         if (!messageIsValid(message)) {
-            throw new MessageCannontBeEmptyExecption();
+            throw new MessageCannotBeEmptyException();
         }
 
         Integer newId = messageRepository.create(message);

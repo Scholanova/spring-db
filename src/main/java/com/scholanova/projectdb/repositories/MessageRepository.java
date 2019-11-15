@@ -22,7 +22,8 @@ public class MessageRepository {
 
     public List<Message> listAll() {
         String query = "SELECT ID as id, " +
-                "CONTENT AS content " +
+                "CONTENT AS content, " +
+                "TITLE AS title " +
                 "FROM MESSAGES";
 
         Map<String, Object> parameters = new HashMap<>();
@@ -34,7 +35,8 @@ public class MessageRepository {
 
     public Message getById(Integer id) {
         String query = "SELECT ID as id, " +
-                "CONTENT AS content " +
+                "CONTENT AS content, " +
+                "TITLE AS title " +
                 "FROM MESSAGES " +
                 "WHERE ID = :id";
 
@@ -53,11 +55,12 @@ public class MessageRepository {
         KeyHolder holder = new GeneratedKeyHolder();
 
         String query = "INSERT INTO MESSAGES " +
-                "(CONTENT) VALUES " +
-                "(:content)";
+                "(CONTENT, TITLE) VALUES " +
+                "(:content, :title)";
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("content", message.getContent());
+                .addValue("content", message.getContent())
+                .addValue("title", message.getTitle());
 
         jdbcTemplate.update(query, parameters, holder);
 
